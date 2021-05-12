@@ -87,10 +87,12 @@ public class InsertarCliente extends HttpServlet {
             try{ codigo } catch(excepction e){ precio=0.00 }
          */
         
-        Cliente c1 = new Cliente(nombre,apellido,dni);
+        System.out.println(dni+ " "+ nombre +" " + apellido);
         
+        Cliente c1 = new Cliente(nombre,apellido,dni);
+        System.out.println(c1);
         try {
-            if (ClienteDAO.insertClienteBasico(c1)==1) {
+            if (!ClienteDAO.insertClienteBasico(c1)) {
                 request.setAttribute("mensaje", "El Cliente ya existe");
             } else {
                 request.setAttribute("mensaje", "El Cliente se ha insertado correctamente");

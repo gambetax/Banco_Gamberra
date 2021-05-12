@@ -22,110 +22,93 @@ import java.util.UUID;
 public class ClienteDAO {
 
     //Metodo para insertar un nuevo cliente en la bd
-    public static int insertCliente(Cliente c) throws ClienteException, BancoException, Exception {
-        int aux = 0;
-        Connection con = null;
+    public static boolean insertCliente(Cliente c) throws ClienteException, BancoException, Exception {
         PreparedStatement st = null;
-        try {
-            con = AdministradorDeConexiones.obtenerConexion();
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
             if (existCliente(c.getDni())) {
-                aux = 1;
-                try {
-                    con.close();
-                } catch (SQLException sqlEx) {
-                } finally {
-                    return 1;
+                return false;
+            } else {
+                String sql = "insert into Clientes (nombre,apellido,dni,direccion_cliente,"
+                        + "cp_cliente,cuenta,sucursal_cliente,fechaCreacion) values (?,?,?,?,?,?,?,?)";
+                st = con.prepareStatement(sql);
+                st.setString(1, c.getNombre());
+                st.setString(2, c.getApellido());
+                st.setString(3, c.getDni());
+                st.setString(4, c.getDireccion());
+                st.setString(5, c.getCodigoPostal());
+                System.out.println(UUID.randomUUID().toString());
+                st.setString(6, UUID.randomUUID().toString());
+
+                st.setInt(7, 0001); // CREAR METODO DONDE SE ASIGNA SURCURSAL
+                st.setString(8, "2020-12-19 00:01:00"); //CREAR METODO DONDE SE ASIGNE LA FECHA DEL MOMENTO
+                if(st.execute()){
+                    System.out.println("CLIENTE INSERTADO");
+                }else{
+                    System.out.println("FAILED TO INSERT");
+                    return false;
                 }
+                
             }
-            String sql = "insert into Clientes (nombre,apellido,dni,direccion_cliente,"
-                    + "cp_cliente,cuenta,sucursal_cliente,fechaCreacion) values (?,?,?,?,?,?,?,?)";
-            st = con.prepareStatement(sql);
-            st.setString(1, c.getNombre());
-            st.setString(2, c.getApellido());
-            st.setString(3, c.getDni());
-            st.setString(4, c.getDireccion());
-            st.setString(5, c.getCodigoPostal());
-            System.out.println(UUID.randomUUID().toString());
-            st.setString(6, UUID.randomUUID().toString());
-
-            st.setInt(7, 0001); // CREAR METODO DONDE SE ASIGNA SURCURSAL
-            st.setString(8, "2020-12-19 00:01:00"); //CREAR METODO DONDE SE ASIGNE LA FECHA DEL MOMENTO
-            st.execute();
-
-            System.out.println("CLIENTE INSERTADO");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        } finally {
-            if (aux == 1) {
-                return 1;
-            } else {
-                try {
-                    con.close();
-                    return 2;
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    throw new BancoException();
-                }
-            }
         }
+        return true;
     }
 
-    public static int insertClienteBasico(Cliente c) throws ClienteException, BancoException {
+    public static boolean insertClienteBasico(Cliente c) throws ClienteException, BancoException {
 
-        int aux = 0;
-        Connection con = null;
         PreparedStatement st = null;
-        try {
-            con = AdministradorDeConexiones.obtenerConexion();
-            if (existCliente(c.getDni())) {
-                aux = 1;
-                try {
-                    con.close();
-                } catch (SQLException sqlEx) {
-                } finally {
-                    return 1;
-                }
-            }
-            String sql = "insert into Clientes (nombre,apellido,dni) values (?,?,?)";
-            st = con.prepareStatement(sql);
-            st.setString(1, c.getNombre());
-            st.setString(2, c.getApellido());
-            st.setString(3, c.getDni());
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
+  
+                String sql = "insert into Clientes (nombre,apellido,dni) values (?,?,?)";
+                st = con.prepareStatement(sql);
+                st.setString(1, c.getNombre());
+                st.setString(2, c.getApellido());
+                st.setString(3, c.getDni());
+                System.out.println("ACA 4");
+                
+                return st.executeUpdate() == 1;
             
-            System.out.println(con);
-            st.execute();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-        } finally {
-            if (aux == 1) {
-                return 1;
-            } else {
-                try {
-                    con.close();
-                    return 2;
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                    System.out.println(ex);
-                    throw new ClienteException();
-                }
-            }
         }
+        return false;
     }
-
+        /*METODO PARA CONSULTAR SI EXISTE EL CLIENTE, NO ES EXACTAMENTE A getCliente*/
+    
+        public static boolean existCliente(String dni) throws ClienteException {
+            
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        boolean exist = false;
+        try (Connection con = AdministradorDeConexiones.obtenerConexion())
+        {
+            String sql = "select dni from Clientes where dni = ? ";
+            st = con.prepareStatement(sql);
+            st.setString(1, dni);
+            rs = st.executeQuery();
+            
+            if (rs.next()) {
+                exist = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exist;
+    }
+        
     /*Metodo para consultar datos de cliente si existe por el dni consultado
         Requiere modificación ya que utiliza la misma consulta de dni
      */
     public static Cliente getCliente(String dni_cliente) throws ClienteException {
 
-        Connection con = null;
         Cliente c = null;
         ResultSet rs = null;
         PreparedStatement st = null;
         int aux = 0;
 
-        try {
-            con = AdministradorDeConexiones.obtenerConexion();
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
             String sql = "select * from Clientes where dni = ?";
             st = con.prepareStatement(sql);
             st.setString(1, dni_cliente);
@@ -155,72 +138,17 @@ public class ClienteDAO {
             if (aux != 1) {
                 e.printStackTrace();
             }
-        } finally {
-            if (rs != null) {
-
-                try {
-                    rs.close();
-                    st.close();
-                    con.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-
-            }
-
-        }
-
+        } 
         return c;
     }
 
-    public static boolean existCliente(String dni) throws ClienteException {
-
-        Connection con = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        boolean exist = false;
-        try {
-            try {
-                con = AdministradorDeConexiones.obtenerConexion();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            String sql = "select dni from Clientes where dni = ?";
-            st = con.prepareStatement(sql);
-            st.setString(1, dni);
-            rs = st.executeQuery();
-
-            if (rs.next()) {
-                exist = true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-
-            return exist;
-        }
-    }
-
     public static ArrayList<Cliente> getListClientes() {
-        Connection con = null;
+
         ArrayList<Cliente> Clientes = new ArrayList<Cliente>();
         PreparedStatement st = null;
         ResultSet rs = null;
         boolean exist = false;
-        try {
-            try {
-                con = AdministradorDeConexiones.obtenerConexion();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try (Connection con = AdministradorDeConexiones.obtenerConexion() ) {
             Cliente cliente_2_list = null;
             String sql = "select * from Clientes";
             st = con.prepareStatement(sql);
@@ -241,12 +169,7 @@ public class ClienteDAO {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException Esql) {
-                Esql.printStackTrace();
-            }
+        }
             return Clientes;
         }
     }
@@ -336,4 +259,3 @@ public class ClienteDAO {
 
         return String.valueOf(numCuenta);
     }*/
-}

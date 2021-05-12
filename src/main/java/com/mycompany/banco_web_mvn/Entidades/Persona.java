@@ -14,17 +14,17 @@ public class Persona {
     String nombre, apellido,dni,direccion,codigo_postal;
     int edad;
     
+    public Persona(String nombre, String apellido, String dni) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
+    }
+    
     public Persona(String nombre, String apellido, String dni, int edad) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
         this.edad = edad;
-    }
-    
-        public Persona(String nombre, String apellido, String dni) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.dni = dni;
     }
 
     public Persona(String nombre, String apellido, String dni, String direccion, String codigo_postal) {

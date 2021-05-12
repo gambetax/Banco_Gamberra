@@ -22,8 +22,7 @@
         APELLIDO: <input type="text" name="apellido" /><br>
         <input type="submit" value="Enviar">
         </form>
-        
-        
+
         <hr><!-- comment -->
         <br><h1> Resultado </h1><!-- comment -->
         
