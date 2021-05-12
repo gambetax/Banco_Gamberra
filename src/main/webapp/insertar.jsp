@@ -16,7 +16,7 @@
         
         <hr><!-- comment -->
             
-        <form action="ClienteServlet" method="POST">
+        <form action="InsertarCliente" method="POST">
         DNI: <input type="text" name="dni" /><br>
         NOMBRE: <input type="text" name="nombre" /><br>
         APELLIDO: <input type="text" name="apellido" /><br>
@@ -27,7 +27,8 @@
         <hr><!-- comment -->
         <br><h1> Resultado </h1><!-- comment -->
         
-        <% if(request.getAttribute("mensaje") !=null) {out.print(request.getAttribute("mensaje"));} %>
+        <% if(request.getAttribute("mensaje") !=null){
+            out.print(request.getAttribute("mensaje"));} %>
         
         
     </body>

@@ -7,18 +7,18 @@ package com.mycompany.banco_web_mvn.Servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  *
  * @author Marian
  */
 @WebServlet(name = "ClienteServlet", urlPatterns = {"/ClienteServlet"})
-public class ClienteServlet extends HttpServlet {
+public class ConsultarServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,16 +82,20 @@ public class ClienteServlet extends HttpServlet {
             por ejemplo, pasar de String a int o Double o viceversa con:
             try{ codigo } catch(excepction e){ precio=0.00 }
         */
+
+         request.setAttribute("mensaje", "TODOS PUTOS");
+ /*
          int dni_verificar= Integer.valueOf(dni);
          
          
+        
          try{
-             if(dni_verificar-dni_verificar==0) {request.setAttribute("mensaje", "TODOS PUTOS");/*Cliente c1 = new Cliente();/*/}
+             if(dni_verificar-dni_verificar==0) {request.setAttribute("mensaje", "TODOS PUTOS");}
          } catch (Exception e){
              request.setAttribute("mensaje", "Ingreso un dni incorrecto, pruebe nuevamente");
          }finally{
             request.getRequestDispatcher("index.jsp");
-         }
+         }*/
     }
 
     /**

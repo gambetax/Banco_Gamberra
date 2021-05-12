@@ -5,6 +5,10 @@
  */
 package com.mycompany.banco_web_mvn.Servlets;
 
+import com.mycompany.banco_web_mvn.BaseDatos.ClienteDAO;
+import com.mycompany.banco_web_mvn.Entidades.Cliente;
+import com.mycompany.banco_web_mvn.Excepciones.BancoException;
+import com.mycompany.banco_web_mvn.Excepciones.ClienteException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -17,8 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Marian
  */
-@WebServlet(name = "ServletInicial", urlPatterns = {"/ServletInicial"})
-public class ServletInicial extends HttpServlet {
+@WebServlet(name = "InsertarCliente", urlPatterns = {"/InsertarCliente"})
+public class InsertarCliente extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,10 +41,10 @@ public class ServletInicial extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet ServletInicial</title>");            
+            out.println("<title>Servlet InsertarCliente</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet ServletInicial at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet InsertarCliente at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -72,21 +76,39 @@ public class ServletInicial extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        //processRequest(request, response);
+
+        String dni = request.getParameter("dni");
+        String nombre = request.getParameter("nombre");
+        String apellido = request.getParameter("apellido");
+
+        /* Si es necesario se crea una variable para convertir un valor al necesario
+            por ejemplo, pasar de String a int o Double o viceversa con:
+            try{ codigo } catch(excepction e){ precio=0.00 }
+         */
         
+        Cliente c1 = new Cliente(nombre,apellido,dni);
         
-        request.getRequestDispatcher("Bienvenido.jsp").forward(request, response);
-        
-        
-        
-        
-        
-        
-        
-        
+        try {
+            if (ClienteDAO.insertClienteBasico(c1)==1) {
+                request.setAttribute("mensaje", "El Cliente ya existe");
+            } else {
+                request.setAttribute("mensaje", "El Cliente se ha insertado correctamente");
+            }
+
+        } catch (ClienteException e) {
+            e.getStackTrace();
+            request.setAttribute("mensaje", e.getMessage());
+        } catch (BancoException e) {
+            request.setAttribute("mensaje", "Estamos realizando tareas de mantenimiento"
+                    + "por favor intente mas tarde");
+            e.printStackTrace();
+        }
+
+        request.getRequestDispatcher("insertar.jsp").forward(request, response);
+
     }
 
-    
     /**
      * Returns a short description of the servlet.
      *

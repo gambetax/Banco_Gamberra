@@ -7,12 +7,12 @@ package com.mycompany.banco_web_mvn.BaseDatos;
 
 import com.mycompany.banco_web_mvn.Excepciones.ClienteException;
 import com.mycompany.banco_web_mvn.Entidades.Cliente;
+import com.mycompany.banco_web_mvn.Excepciones.BancoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.UUID;
 
 /**
@@ -21,17 +21,21 @@ import java.util.UUID;
  */
 public class ClienteDAO {
 
-    
     //Metodo para insertar un nuevo cliente en la bd
-    
-    public static void insertCliente(Cliente c) throws ClienteException, Exception {
-
+    public static int insertCliente(Cliente c) throws ClienteException, BancoException, Exception {
+        int aux = 0;
         Connection con = null;
         PreparedStatement st = null;
         try {
             con = AdministradorDeConexiones.obtenerConexion();
             if (existCliente(c.getDni())) {
-                throw new ClienteException("El cliente ya existe.");
+                aux = 1;
+                try {
+                    con.close();
+                } catch (SQLException sqlEx) {
+                } finally {
+                    return 1;
+                }
             }
             String sql = "insert into Clientes (nombre,apellido,dni,direccion_cliente,"
                     + "cp_cliente,cuenta,sucursal_cliente,fechaCreacion) values (?,?,?,?,?,?,?,?)";
@@ -43,29 +47,76 @@ public class ClienteDAO {
             st.setString(5, c.getCodigoPostal());
             System.out.println(UUID.randomUUID().toString());
             st.setString(6, UUID.randomUUID().toString());
-            
+
             st.setInt(7, 0001); // CREAR METODO DONDE SE ASIGNA SURCURSAL
             st.setString(8, "2020-12-19 00:01:00"); //CREAR METODO DONDE SE ASIGNE LA FECHA DEL MOMENTO
             st.execute();
 
             System.out.println("CLIENTE INSERTADO");
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            if (aux == 1) {
+                return 1;
+            } else {
+                try {
+                    con.close();
+                    return 2;
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    throw new BancoException();
+                }
             }
-
         }
     }
-    
-        /*Metodo para consultar datos de cliente si existe por el dni consultado
-        Requiere modificación ya que utiliza la misma consulta de dni
-        */
 
-    public static Cliente getCliente(String dni_cliente) {
+    public static int insertClienteBasico(Cliente c) throws ClienteException, BancoException {
+
+        int aux = 0;
+        Connection con = null;
+        PreparedStatement st = null;
+        try {
+            con = AdministradorDeConexiones.obtenerConexion();
+            if (existCliente(c.getDni())) {
+                aux = 1;
+                try {
+                    con.close();
+                } catch (SQLException sqlEx) {
+                } finally {
+                    return 1;
+                }
+            }
+            String sql = "insert into Clientes (nombre,apellido,dni) values (?,?,?)";
+            st = con.prepareStatement(sql);
+            st.setString(1, c.getNombre());
+            st.setString(2, c.getApellido());
+            st.setString(3, c.getDni());
+            
+            System.out.println(con);
+            st.execute();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (aux == 1) {
+                return 1;
+            } else {
+                try {
+                    con.close();
+                    return 2;
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    System.out.println(ex);
+                    throw new ClienteException();
+                }
+            }
+        }
+    }
+
+    /*Metodo para consultar datos de cliente si existe por el dni consultado
+        Requiere modificación ya que utiliza la misma consulta de dni
+     */
+    public static Cliente getCliente(String dni_cliente) throws ClienteException {
 
         Connection con = null;
         Cliente c = null;
@@ -122,7 +173,7 @@ public class ClienteDAO {
         return c;
     }
 
-    public static boolean existCliente(String dni) {
+    public static boolean existCliente(String dni) throws ClienteException {
 
         Connection con = null;
         PreparedStatement st = null;
@@ -146,6 +197,7 @@ public class ClienteDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+
         } finally {
             try {
                 con.close();
@@ -156,26 +208,25 @@ public class ClienteDAO {
             return exist;
         }
     }
-    
-    
-    public static ArrayList<Cliente> getListClientes(){
-        Connection con =null;
+
+    public static ArrayList<Cliente> getListClientes() {
+        Connection con = null;
         ArrayList<Cliente> Clientes = new ArrayList<Cliente>();
-        PreparedStatement st= null;
+        PreparedStatement st = null;
         ResultSet rs = null;
         boolean exist = false;
-        try{
-            try{
+        try {
+            try {
                 con = AdministradorDeConexiones.obtenerConexion();
-            } catch (Exception e){
-                    e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            Cliente cliente_2_list =  null;
+            Cliente cliente_2_list = null;
             String sql = "select * from Clientes";
             st = con.prepareStatement(sql);
             rs = st.executeQuery();
-            int cont=1;
-            while(rs.next()){
+            int cont = 1;
+            while (rs.next()) {
                 String nombre = rs.getString("nombre");
                 String apellido = rs.getString("apellido");
                 String dni = rs.getString("dni");
@@ -185,17 +236,17 @@ public class ClienteDAO {
                 cliente_2_list.setApellido(apellido);
                 cliente_2_list.setDni(dni);
                 cliente_2_list.setNumCuenta(NumCuenta);
-                
+
                 Clientes.add(cliente_2_list);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
-            try{
+            try {
                 con.close();
             } catch (SQLException Esql) {
-            Esql.printStackTrace();
-        }
+                Esql.printStackTrace();
+            }
             return Clientes;
         }
     }
@@ -236,7 +287,7 @@ public class ClienteDAO {
         }
     }*/
 
-    /*public static String randomNumeroCuenta() throws SQLException {
+ /*public static String randomNumeroCuenta() throws SQLException {
 
         int numCuenta = 0;
         double n = 0;

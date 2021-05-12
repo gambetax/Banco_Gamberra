@@ -4,7 +4,8 @@
     Author     : Marian
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html" pageEncoding="UTF-8" %>
+<%@page import="java.util.*"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +16,7 @@
         
         <hr><!-- comment -->
             
-        <form action="ClienteServlet" method="post">
+        <form action="ConsultarServlet" method="post">
         DNI: <input type="text" name="dni" /><br>
         NOMBRE: <input type="text" name="nombre" /><br>
         APELLIDO: <input type="text" name="apellido" /><br>
@@ -26,7 +27,8 @@
         <hr><!-- comment -->
         <br><h1> Resultado </h1><!-- comment -->
         
-        <% if(request.getAttribute("mensaje") !=null) {out.print(request.getAttribute("mensaje"));} %>
+        <% if(request.getAttribute("mensaje") !=null) 
+        {out.print(request.getAttribute("mensaje"));} %>
         
         
     </body>

@@ -22,6 +22,11 @@ public class Cliente extends Persona {
         init(numCuenta, false);
     }
     
+    public Cliente(String nombre, String apellido, String dni){
+        super(nombre,apellido,dni);
+        init(numCuenta,false);
+    }
+    
     public Cliente(String nombre,String apellido, String dni, String numCuenta){
         super(nombre,apellido,dni);
         init(numCuenta,false);
