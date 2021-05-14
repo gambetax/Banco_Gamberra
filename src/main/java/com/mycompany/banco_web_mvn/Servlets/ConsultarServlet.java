@@ -5,6 +5,9 @@
  */
 package com.mycompany.banco_web_mvn.Servlets;
 
+import com.mycompany.banco_web_mvn.BaseDatos.ClienteDAO;
+import com.mycompany.banco_web_mvn.Entidades.Cliente;
+import com.mycompany.banco_web_mvn.Excepciones.ClienteException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -12,12 +15,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 /**
  *
  * @author Marian
  */
-@WebServlet(name = "ClienteServlet", urlPatterns = {"/ClienteServlet"})
+@WebServlet(name = "ConsultarServlet", urlPatterns = {"/ConsultarServlet"})
 public class ConsultarServlet extends HttpServlet {
 
     /**
@@ -75,15 +79,29 @@ public class ConsultarServlet extends HttpServlet {
         //processRequest(request, response);
        
         String dni = request.getParameter("dni");
-        String nombre = request.getParameter("nombre");
-        String apellido = request.getParameter("apellido");
+        
+        if(dni.equals(""))
+        {
+            ArrayList<Cliente> arrayClientes = ClienteDAO.getListClientes();
+            request.setAttribute("Clientes", arrayClientes);
+            request.getRequestDispatcher("consultar.jsp").forward(request, response);
+        }
+        
+        try {
+            Cliente cli = ClienteDAO.getCliente(dni);
+            System.out.println(cli);
+            request.setAttribute("Cliente", cli);
+        } catch (ClienteException e) {
+            request.setAttribute("mensaje", e.getMessage());
+            e.printStackTrace();
+        }finally{
+            request.getRequestDispatcher("consultar.jsp").forward(request, response);
+        }
         
          /* Si es necesario se crea una variable para convertir un valor al necesario
             por ejemplo, pasar de String a int o Double o viceversa con:
             try{ codigo } catch(excepction e){ precio=0.00 }
         */
-
-         request.setAttribute("mensaje", "TODOS PUTOS");
  /*
          int dni_verificar= Integer.valueOf(dni);
          

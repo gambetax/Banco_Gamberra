@@ -4,8 +4,13 @@
     Author     : Marian
 --%>
 
-<%@page language="java" contentType="text/html" pageEncoding="UTF-8" %>
+<%@page import="com.mycompany.banco_web_mvn.Entidades.Cliente"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="java.util.*"%>
+
+
+<%@page language="java" contentType="text/html" pageEncoding="UTF-8" %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,17 +23,22 @@
             
         <form action="ConsultarServlet" method="post">
         DNI: <input type="text" name="dni" /><br>
-        NOMBRE: <input type="text" name="nombre" /><br>
-        APELLIDO: <input type="text" name="apellido" /><br>
         <input type="submit" value="Enviar">
-        </form>
         
+        <%
+            if(request.getAttribute("Cliente") != null)
+            { Cliente c = (Cliente) request.getAttribute("Cliente");
+                out.print("Se ha encontrado el" + c);
+            }
+        %>
         
-        <hr><!-- comment -->
-        <br><h1> Resultado </h1><!-- comment -->
-        
-        <% if(request.getAttribute("mensaje") !=null) 
-        {out.print(request.getAttribute("mensaje"));} %>
+        <%
+            if(request.getAttribute("Clientes") != null)
+            { ArrayList<Cliente> clientes = (ArrayList) request.getAttribute("Clientes");
+                    out.print("Se ha encontrado el " + clientes);
+            }
+        %>
+
         
         
     </body>
