@@ -7,6 +7,7 @@ package com.mycompany.banco_web_mvn.BaseDatos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
@@ -15,11 +16,10 @@ import java.sql.ResultSet;
  */
 public class AdministradorDeConexiones {
     
-   /* public static void main(String[] args) throws Exception{
-        ResultSet rs = obtenerConexion().createStatement().executeQuery("Select * from Clientes");
-        while (rs.next()) {
+    /*public static void main(String[] args) throws Exception{
         
-            System.out.println(rs.getString("nombre"));
+        
+
         }
     }*/
     
@@ -40,6 +40,8 @@ public class AdministradorDeConexiones {
        //Retorna la conexión:
        Connection conn = DriverManager.getConnection(dbConnString, dbUser, dbPassword);
        return conn;
+       
+       
     
        
     }

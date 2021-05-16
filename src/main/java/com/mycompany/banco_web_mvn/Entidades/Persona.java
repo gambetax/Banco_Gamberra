@@ -90,9 +90,9 @@ public class Persona {
 
     @Override
     public String toString() {
-        return "Nombre: " + nombre + 
-                "\n Apellido:" + apellido + 
-                "\n Dni: " + dni ;
+        return " Nombre:    " + nombre + 
+                "               \n Apellido:   " + apellido +   
+                "               \n Dni:    " + dni ;
  
     }
 }

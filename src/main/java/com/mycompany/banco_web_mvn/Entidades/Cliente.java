@@ -11,13 +11,14 @@ package com.mycompany.banco_web_mvn.Entidades;
  */
 public class Cliente extends Persona {
     
-    String numCuenta;
+    String numCuenta, sucursal;
     boolean vip;
+    
 
     public Cliente() {
     }
     
-    public Cliente(String nombre, String apellido, String dni, String direccion, String codigo_postal){
+    public Cliente(String nombre, String apellido, String dni, String direccion, String codigo_postal, String sucursal){
         super(nombre,apellido,dni,direccion,codigo_postal);
         init(numCuenta, false);
     }
@@ -56,11 +57,20 @@ public class Cliente extends Persona {
         this.numCuenta = numCuenta;
     }
     
+        public String getSucursal() {
+        return sucursal;
+    }
+    
+        public void setSucursal(String sucursal) {
+        this.sucursal = sucursal;
+    }
     
 
     @Override
     public String toString() {
-        return "\n Cliente:" + super.toString() + 
-                "\n Numero Cuenta: " + numCuenta;
+        return "            " + super.toString() + 
+                "\n Numero Cuenta: " + numCuenta + "\n";
     }
+
+
 }

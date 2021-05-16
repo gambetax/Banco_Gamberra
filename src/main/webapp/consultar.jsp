@@ -8,7 +8,6 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.*"%>
 
-
 <%@page language="java" contentType="text/html" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html>
@@ -35,11 +34,13 @@
         <%
             if(request.getAttribute("Clientes") != null)
             { ArrayList<Cliente> clientes = (ArrayList) request.getAttribute("Clientes");
-                    out.print("Se ha encontrado el " + clientes);
+                    out.print("Se han encontrado los clientes " + "<br>");
+                    
+                    for (Cliente cliente : clientes) {
+                            out.print(cliente + "<br>");
+                        }
             }
         %>
-
-        
-        
+ 
     </body>
 </html>

@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -41,13 +43,13 @@ public class ClienteDAO {
 
                 st.setInt(7, 0001); // CREAR METODO DONDE SE ASIGNA SURCURSAL
                 st.setString(8, "2020-12-19 00:01:00"); //CREAR METODO DONDE SE ASIGNE LA FECHA DEL MOMENTO
-                if(st.execute()){
+                if (st.execute()) {
                     System.out.println("CLIENTE INSERTADO");
-                }else{
+                } else {
                     System.out.println("FAILED TO INSERT");
                     return false;
                 }
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,35 +62,34 @@ public class ClienteDAO {
 
         PreparedStatement st = null;
         try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
-  
-                String sql = "insert into Clientes (nombre,apellido,dni) values (?,?,?)";
-                st = con.prepareStatement(sql);
-                st.setString(1, c.getNombre());
-                st.setString(2, c.getApellido());
-                st.setString(3, c.getDni());
-                System.out.println("ACA 4");
-                
-                return st.executeUpdate() == 1;
-            
+
+            String sql = "insert into Clientes (nombre,apellido,dni) values (?,?,?)";
+            st = con.prepareStatement(sql);
+            st.setString(1, c.getNombre());
+            st.setString(2, c.getApellido());
+            st.setString(3, c.getDni());
+            System.out.println("ACA 4");
+
+            return st.executeUpdate() == 1;
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return false;
     }
-        /*METODO PARA CONSULTAR SI EXISTE EL CLIENTE, NO ES EXACTAMENTE A getCliente*/
-    
-        public static boolean existCliente(String dni) throws ClienteException {
-            
+
+    /*METODO PARA CONSULTAR SI EXISTE EL CLIENTE, NO ES EXACTAMENTE A getCliente*/
+    public static boolean existCliente(String dni) throws ClienteException {
+
         PreparedStatement st = null;
         ResultSet rs = null;
         boolean exist = false;
-        try (Connection con = AdministradorDeConexiones.obtenerConexion())
-        {
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
             String sql = "select dni from Clientes where dni = ? ";
             st = con.prepareStatement(sql);
             st.setString(1, dni);
             rs = st.executeQuery();
-            
+
             if (rs.next()) {
                 exist = true;
             }
@@ -97,7 +98,7 @@ public class ClienteDAO {
         }
         return exist;
     }
-        
+
     /*Metodo para consultar datos de cliente si existe por el dni consultado
         Requiere modificación ya que utiliza la misma consulta de dni
      */
@@ -105,40 +106,44 @@ public class ClienteDAO {
 
         Cliente c = null;
         ResultSet rs = null;
-        PreparedStatement st = null;
+        PreparedStatement ps = null;
         int aux = 0;
 
         try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
             String sql = "select * from Clientes where dni = ?";
-            st = con.prepareStatement(sql);
-            st.setString(1, dni_cliente);
+            ps = con.prepareStatement(sql);
+            ps.setString(1, dni_cliente);
 
-            rs = st.executeQuery();
+            rs = ps.executeQuery();
 
             if (rs.next()) {
                 String nombre = rs.getString("nombre");
                 String apellido = rs.getString("apellido");
                 String dni = rs.getString("dni");
+                String direccionCliente = rs.getString("direccion_cliente");
+                String codigoPostal = rs.getString("cp_cliente");
                 String NumCuenta = rs.getString("cuenta");
+                String sucursal = rs.getString("sucursal_cliente");
                 c = new Cliente();
                 c.setNombre(nombre);
                 c.setApellido(apellido);
                 c.setDni(dni);
+                c.setDireccion(direccionCliente);
+                c.setCodigoPostal(codigoPostal);
                 c.setNumCuenta(NumCuenta);
 
                 c.toString();
 
                 System.out.println(c.toString());
             } else {
-                aux = 1;
-                throw new ClienteException("No existe ese cliente");
+                System.out.println("No existe el cliente");
             }
 
         } catch (Exception e) {
             if (aux != 1) {
                 e.printStackTrace();
             }
-        } 
+        }
         return c;
     }
 
@@ -148,7 +153,7 @@ public class ClienteDAO {
         PreparedStatement st = null;
         ResultSet rs = null;
         boolean exist = false;
-        try (Connection con = AdministradorDeConexiones.obtenerConexion() ) {
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
             Cliente cliente_2_list = null;
             String sql = "select * from Clientes";
             st = con.prepareStatement(sql);
@@ -170,11 +175,37 @@ public class ClienteDAO {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-            return Clientes;
-        }
+        return Clientes;
     }
 
-    /*public static boolean existCuenta(double cuenta) {
+    public static boolean updateCliente(Cliente cliente) throws ClienteException {
+        System.out.println(cliente);
+        Cliente cli = cliente;
+        
+        PreparedStatement ps = null;
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
+
+            String sql = "update clientes set nombre=?,apellido=?,direccion_cliente=?,cp_cliente=?,cuenta=?,sucursal_cliente=? where dni=?";
+            ps = con.prepareCall(sql);
+            ps.setString(1, cli.getNombre());
+            ps.setString(2, cli.getApellido());
+            ps.setString(3, cli.getDireccion());
+            ps.setString(4, cli.getCodigoPostal());
+            ps.setString(5, cli.getNumCuenta());
+            ps.setString(6, cli.getSucursal());
+            ps.setString(7, cli.getDni());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            return true;
+        }
+    }
+}
+
+/*public static boolean existCuenta(double cuenta) {
 
         Connection con = null;
         PreparedStatement st = null;
