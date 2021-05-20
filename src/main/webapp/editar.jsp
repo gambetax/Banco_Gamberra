@@ -24,15 +24,13 @@
 
 
         <div class="row">
-            <div class="col s12">
-                <div class="card light-blue darken-3">
+            <div class="col s12 m6">
+                <div class="card blue-grey darken-1">
                     <div class="card-content white-text">
-                        <span class="card-title">MODIFICAR DATOS</span>
+                        <span class="card-title">Card Title</span>
                         <form action="ConsultaUpdateServlet" method="post">
-                            DNI: <input type="text" name="dni" class="card-content white-text" ><br>
-                            <button class="btn waves-effect waves-light" type="submit" name="CONSULTAR">CONSULTAR DNI
-                            <i class="material-icons right">send</i>
-                            </button>
+                            DNI: <input type="text" name="dni"><br>
+                            <input type="submit" value="ENVIAR">
                         </form>
 
 
@@ -44,8 +42,8 @@
 
 
         <div class="row">
-            <div class="col s12">
-                <div class="card light-blue darken-3">
+            <div class="col s12 m6">
+                <div class="card blue-grey darken-1">
                     <div class="card-content white-text">
                         <%
                             if (request.getAttribute("Cliente") != null) {
@@ -53,16 +51,14 @@
                         %>
 
                         <form action="UpdateServlet" method="post">
-                            <tr> <input type="text" name="nombre" class="card-content white-text" value="<%= c.getNombre()%>" > </tr>
-                            <tr> <input type="text" name="apellido" class="card-content white-text" value="<%= c.getApellido()%>"  > </tr>
-                            <tr> <input type="text" name="dni" class="card-content white-text" value="<%= c.getDni()%>"  > </tr>
-                            <tr> <input type="text" name="direccion" class="card-content white-text" value="<%= c.getDireccion()%>"   > </tr>
-                            <tr> <input type="text" name="codigoPostal" class="card-content white-text" value="<%= c.getCodigoPostal()%>"   > </tr>
-                            <tr> <input type="text" name="numeroCuenta" class="card-content white-text" value="<%= c.getNumCuenta()%>"   > </tr>
-                            <tr> <input type="text" name="Sucursal" class="card-content white-text" value="<%= c.getSucursal()%>"   > </tr>
-                            <button class="btn waves-effect waves-light" type="submit" name="GUARDAR_CAMBIOS">GUARDAR CAMBIOS
-                            <i class="material-icons right">send</i>
-                            </button>
+                            <tr> <input type="text" name="nombre" value="<%= c.getNombre()%>" > </tr>
+                            <tr> <input type="text" name="apellido" value="<%= c.getApellido()%>"  > </tr>
+                            <tr> <input type="text" name="dni" value="<%= c.getDni()%>"  > </tr>
+                            <tr> <input type="text" name="direccion" value="<%= c.getDireccion()%>"   > </tr>
+                            <tr> <input type="text" name="codigoPostal" value="<%= c.getCodigoPostal()%>"   > </tr>
+                            <tr> <input type="text" name="numeroCuenta" value="<%= c.getNumCuenta()%>"   > </tr>
+                            <tr> <input type="text" name="Sucursal" value="<%= c.getSucursal()%>"   > </tr>
+                            <input type="submit" value="ENVIAR">
                         </form>
                         <%
                             }
