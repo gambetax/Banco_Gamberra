@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -180,12 +181,12 @@ public class ClienteDAO {
     public static boolean updateCliente(Cliente cliente) throws ClienteException {
         System.out.println(cliente);
         Cliente cli = cliente;
-        
+
         PreparedStatement ps = null;
         try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
 
             String sql = "update clientes set nombre=?,apellido=?,direccion_cliente=?,cp_cliente=?,cuenta=?,sucursal_cliente=? where dni=?";
-            ps = con.prepareCall(sql);
+            ps = con.prepareStatement(sql);
             ps.setString(1, cli.getNombre());
             ps.setString(2, cli.getApellido());
             ps.setString(3, cli.getDireccion());
@@ -198,6 +199,81 @@ public class ClienteDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return true;
+        }
+    }
+
+    public static boolean deshabilitarCliente(Cliente cliente) throws ClienteException {
+
+        Cliente cli = cliente;
+        PreparedStatement ps = null;
+
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
+            String sql = "update clientes set habilitado=? where dni=?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, "0");
+            ps.setString(2, cli.getDni());
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } finally {
+            return true;
+        }
+
+    }
+
+    public static boolean habilitarCliente(Cliente cliente) throws ClienteException {
+
+        Cliente cli = cliente;
+        PreparedStatement ps = null;
+
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
+            String sql = "update clientes set habilitado=? where dni=?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, "1");
+            ps.setString(2, cli.getDni());
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } finally {
+            return true;
+        }
+
+    }
+
+    public static boolean eliminarCliente(Cliente cliente) throws ClienteException {
+
+        int eliminarApartirMeses = 6;
+        
+        Cliente cli = cliente;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try (Connection con = AdministradorDeConexiones.obtenerConexion()) {
+            String sqlEliminar = "delete from clientes where dni=? and habilitado=0";
+            String sqlConsultar = "SELECT TIMESTAMPDIFF(MONTH,(select fechaDeshabilitacion from clientes where dni=?), (SELECT current_date()))";
+
+            ps = con.prepareStatement(sqlConsultar);
+            ps.setString(1, cli.getDni());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                if (rs.getInt(1) > eliminarApartirMeses) {
+                    ps = con.prepareCall(sqlEliminar);
+                } else {
+                    return false;
+                }
+            }
+            ps.executeQuery();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
         } finally {
             return true;
         }
